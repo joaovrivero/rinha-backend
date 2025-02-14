@@ -1,18 +1,19 @@
 package main
 
 import (
-	"github.com/joaovrivero/rinha-backend/internal/config"
-	"github.com/joaovrivero/rinha-backend/internal/routes"
+	"log"
+	"rinha-backend/internal/config"
+	"rinha-backend/internal/server"
 )
 
 func main() {
-
-	db, err := config.NewDB()
+	cfg, err := config.Load()
 	if err != nil {
-		panic("failed to connect database")
+		log.Fatal("Error loading config:", err)
 	}
 
-	router := routes.SetupRouter(db)
-
-	router.Run(":8080") // nginx redicionará para a porta 9999
+	server := server.NewServer(cfg)
+	if err := server.Run(); err != nil {
+		log.Fatal("Error running server:", err)
+	}
 }
