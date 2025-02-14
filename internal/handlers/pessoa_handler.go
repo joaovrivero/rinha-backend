@@ -37,6 +37,11 @@ func (h *PessoaHandler) CreatePessoa(c *gin.Context) {
 		return
 	}
 
+	if len(pessoa.Apelido) > 32 {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": "apelido muito longo"})
+		return
+	}
+
 	c.Header("Location", "/pessoas/"+pessoa.ID)
 	c.Status(http.StatusCreated)
 }

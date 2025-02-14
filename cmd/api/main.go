@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/joaovrivero/rinha-backend/internal/config"
+	"github.com/joaovrivero/rinha-backend/internal/routes"
 )
 
 func main() {
@@ -11,7 +12,7 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	router := config.SetupRouter(db)
+	router := routes.SetupRouter(db)
 
-	r.Run(":8080") // nginx redicionará para a porta 9999
+	router.Run(":8080") // nginx redicionará para a porta 9999
 }
