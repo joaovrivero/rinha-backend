@@ -2,23 +2,29 @@ package config
 
 import (
 	"os"
+	"runtime"
+	"time"
 )
 
-type Config struct {
-	DatabaseURL string
-	Port        string
+var DatabaseURL string
+var CacheURL string
+var PROFILING bool
+var NumBatch = 1000
+var NumWorkers = 1
+var WorkerTimeout = 1 * time.Second
+
+func init() {
+	NumWorkers = runtime.GOMAXPROCS(0) * 2
+	DatabaseURL = envOrFatal("DATABASE_URL")
+	CacheURL = envOrFatal("CACHE_URL")
+	PROFILING = os.Getenv("PROFILING") == "true"
 }
 
-func Load() (*Config, error) {
-	return &Config{
-		DatabaseURL: getEnv("DATABASE_URL", "host=db user=rinha password=rinha dbname=rinhadb port=5432 sslmode=disable"),
-		Port:        getEnv("PORT", "80"),
-	}, nil
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
+func envOrFatal(key string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		panic("missing required environment variable " + key)
 	}
-	return defaultValue
+
+	return value
 }
